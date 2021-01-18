@@ -1,10 +1,11 @@
 from typing import Dict, Callable
 from app.data.source.rancher import RancherDatasource
-
+from app.data.source.gke import GkeDataSource
 
 class SourceRegister:
     sources: Dict[str, Callable] = {
-        'rancher': RancherDatasource
+        'rancher': RancherDatasource,
+        'gke': GkeDataSource
     }
 
     @classmethod
