@@ -19,8 +19,15 @@ class RancherSource(BaseModel):
     ignore: List[str] = None
 
 
+class GkeSource(BaseModel):
+    filters: Dict[str, str] = None
+    tags: Dict[str, str] = None
+    ignore: List[str] = None
+
+
 class EnforcementSource(BaseModel):
     rancher: RancherSource = None
+    gke: GkeSource = None
 
 
 class Enforcement(BaseModel):

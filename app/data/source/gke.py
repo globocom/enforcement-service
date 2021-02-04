@@ -1,9 +1,8 @@
 from typing import List, Dict
-import requests
 
 from app.data.source.definition.base import BaseSource
 from app.domain.entities import Cluster
-
+from google.oauth2 import service_account
 
 class GkeDataSource(BaseSource):
     def get_clusters(self) -> List[Cluster]:

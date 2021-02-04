@@ -12,6 +12,7 @@ injector = "*"
 requests = "*"
 kopf = "*"
 pydantic = "*"
+google-cloud-container = "*"
 
 [requires]
 python_version = "3.8"

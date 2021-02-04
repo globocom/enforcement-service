@@ -1,0 +1,22 @@
+apiVersion: enforcement.globo.com/v1beta1
+kind: ClusterRule
+metadata:
+  name: gke-rule #Rule name
+spec:
+  enforcements: #List of packages that will be installed in the filtered clusters
+    - name: helm-guestbook #Name
+      repo: https://github.com/argoproj/argocd-example-apps #Git repository
+      path: helm-guestbook #Package folder within the repository
+      namespace: default #Package installation namespace. The default installation namespace is default
+      helm:
+        parameters: #Enter parameters for Helm packages
+          replicaCount: 1
+    - name: guestbook #Name
+      repo: https://github.com/argoproj/argocd-example-apps #Git repository
+      path: guestbook #Package folder within the repository
+  source:
+    secretName: gke-secret
+    gke: #Enforcement will filter all clusters that match the rules defined in filters, labels and ignore. All of these fields are optional.
+      filters: #Supports all filters available in the Rancher API
+      labels: #Labels registered to the cluster
+      ignore: #Ignore clusters that have the names listed below.
