@@ -1,5 +1,6 @@
-import attr
 from typing import List, Dict
+
+import attr
 
 from app.domain.entities import Enforcement
 
@@ -25,7 +26,6 @@ class EnforcementChangeDetector:
         )
 
     def detect_change_enforcements(self) -> List[Enforcement]:
-
         def compare(new_enforcement: Enforcement) -> bool:
             old_enforcement = self._old_enforcements_map.get(new_enforcement.name)
             if not old_enforcement:
@@ -54,4 +54,3 @@ class EnforcementChangeDetector:
     @classmethod
     def _new_enforcement_map(cls, enforcements: List[Enforcement]) -> Dict[str, Enforcement]:
         return {enforcement.name: enforcement for enforcement in enforcements}
-

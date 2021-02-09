@@ -1,6 +1,6 @@
 from typing import Dict, List
-import attr
 
+import attr
 from argocd_client import (
     ClusterServiceApi,
     V1alpha1Cluster,

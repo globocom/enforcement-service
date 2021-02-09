@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import Dict, List
+
+from pydantic import BaseModel
 
 
 class Cluster(BaseModel):
@@ -28,6 +29,7 @@ class GkeSource(BaseModel):
 class EnforcementSource(BaseModel):
     rancher: RancherSource = None
     gke: GkeSource = None
+    secretName: str = None
 
 
 class Enforcement(BaseModel):
@@ -44,4 +46,10 @@ class ClusterRule(BaseModel):
 
 
 class ClusterRuleStatus(BaseModel):
-    clusters: List[dict]
+    clusters: List[dict] = []
+    install_errors: List[str] = []
+
+
+class Secret(BaseModel):
+    token: str
+    url: str

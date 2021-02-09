@@ -1,3 +1,5 @@
+[![Actions Status](https://github.com/globocom/enforcement/workflows/build/badge.svg)](https://github.com/{owner}/{repo}/actions)
+
 # Enforcement
 ## Introduction
 Enforcement is an open source project focused on the management and simultaneous deployment of applications and policies across multiple clusters through GitOps.
@@ -51,15 +53,17 @@ Build the Docker image.
 docker build -t enforcement . 
 ```
 ## Configuration 
-Enforcement uses the environment variables described in the table below. 
+Enforcement uses the environment variables described in the table below to run locally or in the production and you have
+the option of create a config.ini to configure as well instead variables and last option is use secret to configure you 
+sources(rancher, gke, eks) . You can see the examples below. 
 
-| Environment Variable |      Example     |          Description         |
+### Creating an environment variables
+ Environment Variable |      Example     |          Description         |
 |:--------------------:|:----------------:|:----------------------------:|
-| RANCHER_URL                | https://myrancherurl.domain.com               | Rancher URL         |
-| RANCHER_TOKEN              | token-q5bhr:xtcd5lbzlg6mhnvncwbrk55zvmh       | Rancher API Key configured without scope |   
-| ARGO_URL                   | https://myargourl.domain.com                  | Argo URL          |
+ | ARGO_URL                   | https://myargourl.domain.com                  | Argo URL          |
 | ARGO_USERNAME              | admin                                         | Argo Username            |
-| ARGO_PASSWORD              | password                                      | Argo Password            | 
+| ARGO_PASSWORD              | password                                      | Argo Password            |
+
 
 ## Supported cluster sources
 Enforcement aims to detect the creation of clusters in several services of managed Kubernetes and cluster orchestration. Currently, the only cluster source supported is Rancher. We are developing support for EKS, GKE and AKS.
@@ -98,4 +102,41 @@ spec:
         - cluster2
         - cluster3
 ```
-The rancher.filters, rancher.labels and rancher.ignore fields are specific to Rancher. Other cluster sources may have other values. You can get all the examples of ClusterRules objects [here](https://github.com/globocom/enforcement-service/tree/master/examples).
+The rancher.filters, rancher.labels and rancher.ignore fields are specific to Rancher. Other cluster sources may have other values. You can get all the examples of ClusterRules objects [here](https://github.com/globocom/enforcement-service/tree/master/examples/sourcers).
+
+### Creating a Secret
+
+Enforcement obtains the credentials to connect to the cluster source through a secret that must be previously created.
+See an example of a secret created for the Rancher Cluster Source. 
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rancher-secret
+type: Opaque
+stringData:
+  token: abc94943#434!
+  url: https://rancher.test.com
+``` 
+
+In this example of a secret for Rancher, we need to put two values that are the url and token however for other sources 
+it could be different. You can see others example of secret objects [here](https://github.com/globocom/enforcement-service/tree/master/examples/secrets). 
+
+You can specify the name of the secret in the ***spec.source.secretName*** field of the cluster source object. When no secret name is specified, Enforcement looks for a secret with the same name as the source cluster used.
+
+## HOW TO TEST
+To run the tests without coverage you may call: 
+  ```shell
+  make test
+  ```
+
+To run the tests with coverage you may call and before called make test: 
+  ```shell
+  make coverage 
+  ```
+
+To generate the html you may call and called make test and make coverage before: 
+  ```shell
+  make generate
+  ```  

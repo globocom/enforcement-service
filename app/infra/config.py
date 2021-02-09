@@ -1,5 +1,6 @@
 import configparser
 import os
+
 from injector import inject
 
 
@@ -9,14 +10,6 @@ class Config:
         config = configparser.ConfigParser()
         config.read("config.ini")
         self._config = config
-
-    @property
-    def rancher_url(self) -> str:
-        return self._get_config_value('RANCHER_URL', 'rancher', 'url')
-
-    @property
-    def rancher_token(self) -> str:
-        return self._get_config_value('RANCHER_TOKEN', 'rancher', 'token')
 
     @property
     def argo_url(self) -> str:
@@ -34,6 +27,6 @@ class Config:
             self, environemnt_variable_name: str, config_name: str, config_attribute: str,
     ) -> str:
         return (
-            os.getenv(environemnt_variable_name)
-            or self._config.get(config_name, config_attribute)
+                os.getenv(environemnt_variable_name)
+                or self._config.get(config_name, config_attribute)
         )

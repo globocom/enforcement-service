@@ -1,4 +1,5 @@
 from typing import List, Dict
+
 import requests
 
 from app.data.source.definition.base import BaseSource
@@ -6,19 +7,18 @@ from app.domain.entities import Cluster
 
 
 class RancherDatasource(BaseSource):
-
     def get_clusters(self) -> List[Cluster]:
         headers = {
-            "Authorization": f"Bearer {self.config.rancher_token}"
+            "Authorization": f"Bearer {self.secret.token}"
         }
 
         filters: dict = self.source.rancher.filters if self.source.rancher.filters else dict()
         filters.update({'state': 'active'})
 
-        url = f"{self.config.rancher_url}/v3/clusters"
+        url = f"{self.secret.url}/v3/clusters"
 
         with requests.get(
-            url, verify=False, headers=headers, params=filters,
+            url, verify=False, headers=headers, params=filters, timeout=5,
         ) as response:
             response.raise_for_status()
             return self._filter_and_map_clusters(
@@ -46,8 +46,8 @@ class RancherDatasource(BaseSource):
         return Cluster(
             name=cluster_map['name'],
             id=cluster_map['id'],
-            token=self.config.rancher_token,
-            url=f'{self.config.rancher_url}/k8s/clusters/{cluster_map["id"]}',
+            token=self.secret.token,
+            url=f'{self.secret.url}/k8s/clusters/{cluster_map["id"]}',
         )
 
 

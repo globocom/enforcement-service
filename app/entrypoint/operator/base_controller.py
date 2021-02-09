@@ -7,7 +7,6 @@ class BaseController:
         raise Exception("Not implemented")
 
     def register_method(self, handler_type: Callable, method: Callable, kind: str,
-                 group: str = 'enforcement.globo.com', version: str = 'v1beta1', **kwargs):
+                        group: str = 'enforcement.globo.com', version: str = 'v1beta1', **kwargs):
         decorate = handler_type(group, version, kind, **kwargs)
         decorate(method)
-

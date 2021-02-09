@@ -1,6 +1,6 @@
 from typing import Dict, List, Any
-import attr
 
+import attr
 from argocd_client import (
     V1alpha1ApplicationDestination,
     V1alpha1Application,
@@ -12,11 +12,13 @@ from argocd_client import (
     V1alpha1ApplicationList,
     V1alpha1ApplicationSource,
     V1alpha1ApplicationSourceHelm,
-    V1alpha1HelmParameter
+    V1alpha1HelmParameter,
+    ApiException
 )
 
 from app.domain.entities import Enforcement, Helm
 from app.domain.repositories import EnforcementRepository
+from app.domain.exceptions import EnforcementInvalidException
 from app.infra.logger import logger
 
 
@@ -26,16 +28,28 @@ class ApplicationService(EnforcementRepository):
 
     def create_enforcement(self, cluster_name: str, instance_name: str, enforcement: Enforcement) -> None:
         application = self._make_application_by_enforcement(cluster_name, instance_name, enforcement)
-        self._application_service.create_mixin9(application)
+
+        try:
+            self._application_service.create_mixin9(application)
+        except ApiException as e:
+            if e.status == 400:
+                raise EnforcementInvalidException(e.__str__())
+            raise e
 
     def update_enforcement(self, cluster_name: str, instance_name: str, enforcement: Enforcement) -> None:
         application = self._make_application_by_enforcement(cluster_name, instance_name, enforcement)
-        self._application_service.update_mixin9(application.metadata.name, application)
+
+        try:
+            self._application_service.update_mixin9(application.metadata.name, application)
+        except ApiException as e:
+            if e.status == 400:
+                raise EnforcementInvalidException(e.__str__())
+            raise e
 
     def remove_enforcement(self, enforcement_name: str) -> None:
         application = V1alpha1Application(
             metadata=V1ObjectMeta(
-               name=enforcement_name
+                name=enforcement_name
             )
         )
 
@@ -68,19 +82,19 @@ class ApplicationService(EnforcementRepository):
 
         if enforcement.helm:
             source.helm = V1alpha1ApplicationSourceHelm(
-                    parameters=[
-                        V1alpha1HelmParameter(
-                            name=key,
-                            value=value
-                        )
-                        for key, value in enforcement.helm.parameters.items()
-                    ] if enforcement.helm.parameters else []
+                parameters=[
+                    V1alpha1HelmParameter(
+                        name=key,
+                        value=value
+                    )
+                    for key, value in enforcement.helm.parameters.items()
+                ] if enforcement.helm.parameters else []
             )
 
         return V1alpha1Application(
             metadata=V1ObjectMeta(
-               name=f"{instance_name}",
-               labels={"cluster_name": cluster_name},
+                name=f"{instance_name}",
+                labels={"cluster_name": cluster_name},
             ),
             spec=V1alpha1ApplicationSpec(
                 destination=V1alpha1ApplicationDestination(
@@ -90,7 +104,7 @@ class ApplicationService(EnforcementRepository):
                 source=source,
                 sync_policy=V1alpha1SyncPolicy(
                     automated=V1alpha1SyncPolicyAutomated(
-                        prune=False,
+                        prune=True,
                         self_heal=True,
                     )
                 )

@@ -1,5 +1,5 @@
-from app.domain.repositories import SourceRepository
 from app.domain.entities import EnforcementSource
+from app.domain.repositories import SourceRepository
 
 
 class SourceLocator:
