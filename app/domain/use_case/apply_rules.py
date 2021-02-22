@@ -16,6 +16,7 @@ class ApplyRulesUseCase:
     def execute(self, cluster_rule: ClusterRule) -> RulesResponse:
         source = self._source_locator.locate(cluster_rule.source)
         clusters = source.get_clusters()
+
         cluster_group = self._cluster_group_builder.build(clusters=clusters)
         cluster_group.register()
 

@@ -22,7 +22,7 @@ class RancherSource(BaseModel):
 
 class GkeSource(BaseModel):
     filters: Dict[str, str] = None
-    tags: Dict[str, str] = None
+    labels: Dict[str, str] = None
     ignore: List[str] = None
 
 

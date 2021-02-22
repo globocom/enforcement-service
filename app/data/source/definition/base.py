@@ -1,3 +1,5 @@
+from typing import Dict
+
 import attr
 
 from app.domain.entities import EnforcementSource, Secret
@@ -12,13 +14,11 @@ class BaseSource(SourceRepository):
     source: EnforcementSource
     kubernetes_helper: KubernetesHelper
     source_name: str
-    secret: Secret
+    secret: Dict[str, str]
 
-
-    def get_secret(self) -> Secret:
+    def get_secret(self) -> Dict[str, str]:
         secret_name = self.source.secretName if self.source.secretName is not None else self.source_name
         return self.kubernetes_helper.get_secret(secret_name)
-
 
     def __attrs_post_init__(self):
         self.secret = self.get_secret()

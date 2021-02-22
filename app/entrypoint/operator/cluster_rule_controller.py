@@ -65,7 +65,6 @@ class ClusterRuleController(BaseController):
         logger.debug(f"sync clusters for %s", name)
 
         current_status = ClusterRuleController._restore_status(status)
-
         if not current_status:
             return
 

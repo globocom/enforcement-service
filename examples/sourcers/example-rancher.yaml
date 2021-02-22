@@ -18,7 +18,7 @@ spec:
     rancher: #Enforcement will filter all clusters that match the rules defined in filters, labels and ignore. All of these fields are optional.
       filters: #Supports all filters available in the Rancher API
         driver: googleKubernetesEngine
-      labels: #Labels registered to the cluster
+      tags: #Labels registered to the cluster
         cattle.io/creator: "norman"
       ignore: #Ignore clusters that have the names listed below.
         - cluster1

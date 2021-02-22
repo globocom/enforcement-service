@@ -24,7 +24,7 @@ class KubernetesHelper:
     def _decode_secret(cls, secret: V1Secret) -> Dict[str, str]:
         return {k: base64.b64decode(v).decode() for k, v in secret.data.items()}
 
-    def get_secret(self, secret_name: str) -> Secret:
+    def get_secret(self, secret_name: str) -> Dict[str, str]:
         secret_encoded = self._get_secret_from_api(secret_name)
         secret_decoded = self._decode_secret(secret_encoded)
-        return Secret(**secret_decoded)
+        return secret_decoded

@@ -15,8 +15,11 @@ spec:
       repo: https://github.com/argoproj/argocd-example-apps #Git repository
       path: guestbook #Package folder within the repository
   source:
-    secretName: gke-secret
+    secretName: gke
     gke: #Enforcement will filter all clusters that match the rules defined in filters, labels and ignore. All of these fields are optional.
-      filters: #Supports all filters available in the Rancher API
-      labels: #Labels registered to the cluster
-      ignore: #Ignore clusters that have the names listed below.
+      filters:
+        driver: teste
+      labels: #Ignore clusters that have the names listed below.
+        teste: "teste"
+      ignore:
+        - teste
