@@ -2,16 +2,17 @@ import json
 from typing import List, Any, Dict
 
 from google.cloud.container import ClusterManagerClient
+import google.auth
+import google.auth.transport.requests
 from google.oauth2 import service_account
 from google.oauth2.credentials import Credentials
-
 from app.data.source.definition.base import BaseSource
 from app.domain.entities import Cluster
 
 
 class GkeDataSource(BaseSource):
     def get_clusters(self) -> List[Cluster]:
-        project_id = self._get_service_account_or_field("project_id")
+        project_id = self._get_service_account_or_field_from_secret("project_id")
         client = self._get_client()
 
         response = client.list_clusters(project_id=project_id, zone='-')
@@ -38,26 +39,28 @@ class GkeDataSource(BaseSource):
 
         return set(labels.items()).issubset(set(cluster_map.resource_labels.items())) if labels else True
 
-    @classmethod
-    def _build_cluster(cls, cluster: Any) -> Cluster:
+    def _build_cluster(self, cluster: Any) -> Cluster:
         return Cluster(
             name=cluster.name,
             id=cluster.name,
-            token=cluster.token,
+            token=self._get_credentials().token,
             url=f'https://{cluster.endpoint}',
         )
 
     def _get_credentials(self) -> Credentials:
-        sa = self._get_service_account_or_field()
-        credentials = service_account.Credentials.from_service_account_info(sa)
+        sa = self._get_service_account_or_field_from_secret()
+        credentials = service_account.Credentials \
+            .from_service_account_info(sa,
+                                       scopes=['https://www.googleapis.com/auth/cloud-platform'])
+        credentials.refresh(google.auth.transport.requests.Request())
         return credentials
 
     def _get_client(self) -> ClusterManagerClient:
         credentials = self._get_credentials()
         return ClusterManagerClient(credentials=credentials)
 
-    def _get_service_account_or_field(self, field: str = None) -> Any:
-        sa = json.loads(self.secret['key.json'])
+    def _get_service_account_or_field_from_secret(self, field: str = None) -> Any:
+        sa = json.loads(self.secret['service-account'])
         if field is None:
             return sa
         return sa.get(field)

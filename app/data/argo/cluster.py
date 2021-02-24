@@ -36,7 +36,8 @@ class ClusterService(ClusterRepository):
             server=cluster.url,
             config=V1alpha1ClusterConfig(
                 bearer_token=cluster.token,
-                tls_client_config=V1alpha1TLSClientConfig(insecure=True)
+                tls_client_config=V1alpha1TLSClientConfig(
+                    insecure=True)
             ),
         )
         self._cluster_service.create(argo_cluster)
